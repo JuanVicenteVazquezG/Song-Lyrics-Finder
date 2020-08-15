@@ -18,20 +18,24 @@ function searchLyrics(event) {
         song = document.querySelector('#song').value;
     // If the user left the fields empty
     if (artist === '' || song === '') {
-
-        UI.divMessages.innerHTML = 'Error ... All fields must be filled out';
-        UI.divMessages.classList.add('error');
-        setTimeout(() => {
-            UI.divMessages.innerHTML = '';
-            UI.divMessages.classList.remove('error');
-        }, 3000);
+        UI.showMessage('Error ... All fields must be filled out', 'error');
     }
     else {
         // If the form is fill out make an Api fetch
         const api = new API(artist, song);
         api.retrieveDataFromApi()
-            .then(response => { console.log(response.response.lyrics); });
+            .then(response => {
+                if (response.response.lyrics) {
+                    // If the song exist
+                    const { lyrics } = response.response;
+                    UI.divResult.innerHTML = lyrics;
+                }
+                else {
+                    UI.showMessage('Error... song or artist not found, please try again with other search', 'error');
+                    formSearch.reset();
+                }
+
+            });
 
     }
-
-} 
+}
